@@ -1,33 +1,25 @@
 <template>
     <div class="login">
       <div class="box">
+        <h2>缺陷检测在线管理平台</h2>
         <el-form
-            ref="ruleFormRef"
-            style="max-width: 600px"
-            :model="ruleForm"
+            size="small"
+            ref="formRef"
+            :model="formDATA"
             status-icon
             :rules="rules"
-            label-width="auto"
-            class="demo-ruleForm"
+            label-width="40px"
           >
-            <el-form-item label="Password" prop="pass">
-              <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
+            <el-form-item label="账号" prop="loginId">
+              <el-input v-model.number="formDATA.loginId" />
             </el-form-item>
-            <el-form-item label="Confirm" prop="checkPass">
-              <el-input
-                v-model="ruleForm.checkPass"
-                type="password"
-                autocomplete="off"
-              />
+            <el-form-item label="密码" prop="loginPwd">
+              <el-input v-model="formDATA.loginPwd" type="password" />
             </el-form-item>
-            <el-form-item label="Age" prop="age">
-              <el-input v-model.number="ruleForm.age" />
-            </el-form-item>
+
             <el-form-item>
-              <el-button type="primary" @click="submitForm(ruleFormRef)"
-                >Submit</el-button
-              >
-              <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
+              <el-button type="primary" @click="submitForm(formRef)">登录</el-button>
+              <el-button @click="resetForm(formRef)">取消</el-button>
             </el-form-item>
           </el-form>
       </div>
@@ -35,73 +27,57 @@
 </template>
 
 <script setup lang="ts">
+      //导入组合式API
       import { reactive, ref } from 'vue'
+      //导入element-plus的类型
       import type { FormInstance, FormRules } from 'element-plus'
+      //导入请求api
+      import { $Login } from '../api/admin'
+      //定义一个ref对象绑定表单
+      const formRef = ref<FormInstance>()
 
-      const ruleFormRef = ref<FormInstance>()
+      //表单数据
+      const formDATA = reactive({
+        loginId: '',
+        loginPwd: ''
+      })
 
-      const checkAge = (rule: any, value: any, callback: any) => {
-        if (!value) {
-          return callback(new Error('Please input the age'))
-        }
-        setTimeout(() => {
-          if (!Number.isInteger(value)) {
-            callback(new Error('Please input digits'))
-          } else {
-            if (value < 18) {
-              callback(new Error('Age must be greater than 18'))
-            } else {
-              callback()
-            }
-          }
-        }, 1000)
-      }
-
-      const validatePass = (rule: any, value: any, callback: any) => {
+      //验证账号
+      const validateLoginId = (rule: any, value: any, callback: any) => {
         if (value === '') {
-          callback(new Error('Please input the password'))
+          callback(new Error('请输入账号'))
         } else {
-          if (ruleForm.checkPass !== '') {
-            if (!ruleFormRef.value) return
-            ruleFormRef.value.validateField('checkPass', () => null)
-          }
           callback()
         }
       }
-      const validatePass2 = (rule: any, value: any, callback: any) => {
+      //验证密码
+      const validateLoginPwd = (rule: any, value: any, callback: any) => {
         if (value === '') {
-          callback(new Error('Please input the password again'))
-        } else if (value !== ruleForm.pass) {
-          callback(new Error("Two inputs don't match!"))
+          callback(new Error('请输入密码'))
         } else {
           callback()
         }
       }
 
-      const ruleForm = reactive({
-        pass: '',
-        checkPass: '',
-        age: '',
+      //验证对象
+      const rules = reactive<FormRules<typeof formDATA>>({
+        loginId: [{ validator: validateLoginId, trigger: 'blur' }],
+        loginPwd: [{ validator: validateLoginPwd, trigger: 'blur' }],
       })
 
-      const rules = reactive<FormRules<typeof ruleForm>>({
-        pass: [{ validator: validatePass, trigger: 'blur' }],
-        checkPass: [{ validator: validatePass2, trigger: 'blur' }],
-        age: [{ validator: checkAge, trigger: 'blur' }],
-      })
-
+      //提交表单
       const submitForm = (formEl: FormInstance | undefined) => {
         if (!formEl) return
         formEl.validate((valid) => {
           if (valid) {
-            console.log('submit!')
+            $Login(formDATA)
           } else {
-            console.log('error submit!')
             return false
           }
         })
       }
 
+      //重置表单
       const resetForm = (formEl: FormInstance | undefined) => {
         if (!formEl) return
         formEl.resetFields()
@@ -118,8 +94,17 @@
   align-items: center;
   .box{
     width: 400px;
-    height: 200px;
     border: 1px solid #fff;
+    padding: 20px;
+    h2{
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    ::deep .el-form-item__label{
+      color: #fff;
+    }
   }
 }
 </style>
