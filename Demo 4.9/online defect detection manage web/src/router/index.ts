@@ -1,9 +1,11 @@
+import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs'
 import {createRouter,createWebHashHistory} from 'vue-router'
 const router = createRouter({
   history:createWebHashHistory(),
   routes:[
     {
         path:'/',
+        meta:{title:'登录'},
         component:()=>import('../views/Login.vue')
     },
     {
@@ -12,7 +14,50 @@ const router = createRouter({
     },
     {
         path:'/index',
-        component:()=>import('../views/Index.vue')
+        meta:{title:'云边协同缺陷检测平台'},
+        component:()=>import('../views/Index.vue'),
+        children:[
+          {
+            path:'/home',
+            meta:{title:'首页'},
+            component:()=>import('../views/Home.vue')
+          },
+          {
+            path:'/device',
+            meta:{title:'边缘设备管理'},
+            component:()=>import('../views/management/device.vue')
+          },
+          {
+            path:'/database',
+            meta:{title:'数据集管理'},
+            component:()=>import('../views/management/database.vue')
+          },
+          {
+            path:'/detect',
+            meta:{title:'检测任务管理'},
+            component:()=>import('../views/management/detect.vue')
+          },
+          {
+            path:'/model',
+            meta:{title:'模型管理'},
+            component:()=>import('../views/management/model.vue')
+          },
+          {
+            path:'/image',
+            meta:{title:'缺陷图片管理'},
+            component:()=>import('../views/management/image.vue')
+          },
+          {
+            path:'/user',
+            meta:{title:'用户管理'},
+            component:()=>import('../views/system/user.vue')
+          },
+          {
+            path:'/character',
+            meta:{title:'角色管理'},
+            component:()=>import('../views/system/character.vue')
+          },
+        ]
     }
   ]  
 })
