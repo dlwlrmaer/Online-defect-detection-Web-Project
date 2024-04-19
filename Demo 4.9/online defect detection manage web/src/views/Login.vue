@@ -36,6 +36,7 @@
       //定义一个ref对象绑定表单
       const formRef = ref<FormInstance>()
 
+      import axios from 'axios';
       //表单数据
       const formDATA = reactive({
         loginId: '',
